@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class ConnectController {
+    public static final String BUCKET = "ocp-sandbox";
     @GetMapping(value="/byKey")
     public String connectByKey() {
         BasicAWSCredentials credentials =
@@ -50,7 +51,7 @@ public class ConnectController {
 
     private String getFileFromS3(AmazonS3 s3Client) {
         ListObjectsRequest listRequest = new ListObjectsRequest();
-        listRequest.setBucketName("magic-data-daily");
+        listRequest.setBucketName(BUCKET);
 
         ObjectListing objectListing = s3Client.listObjects(listRequest);
         StringBuilder filesList = new StringBuilder();
