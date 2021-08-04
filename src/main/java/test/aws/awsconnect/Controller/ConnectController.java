@@ -44,7 +44,7 @@ public class ConnectController {
 //        Credentials session_creds = session_token_result.getCredentials();
 //        BasicSessionCredentials credentials = new BasicSessionCredentials(
 //                session_creds.getAccessKeyId(), session_creds.getSecretAccessKey(), session_creds.getSessionToken());
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new STSProfileCredentialsServiceProvider(new RoleInfo())).withRegion(Regions.US_EAST_1).build();
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new STSProfileCredentialsServiceProvider(new RoleInfo("test"))).withRegion(Regions.US_EAST_1).build();
         return getFileFromS3(s3Client);
     }
 
