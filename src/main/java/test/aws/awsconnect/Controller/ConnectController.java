@@ -15,9 +15,7 @@ import com.amazonaws.services.s3.model.S3ObjectSummary;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenService;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClient;
 import com.amazonaws.services.securitytoken.AWSSecurityTokenServiceClientBuilder;
-import com.amazonaws.services.securitytoken.model.Credentials;
-import com.amazonaws.services.securitytoken.model.GetSessionTokenRequest;
-import com.amazonaws.services.securitytoken.model.GetSessionTokenResult;
+import com.amazonaws.services.securitytoken.model.*;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,7 +42,13 @@ public class ConnectController {
 //        Credentials session_creds = session_token_result.getCredentials();
 //        BasicSessionCredentials credentials = new BasicSessionCredentials(
 //                session_creds.getAccessKeyId(), session_creds.getSecretAccessKey(), session_creds.getSessionToken());
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new STSProfileCredentialsServiceProvider(new RoleInfo("test"))).withRegion(Regions.US_EAST_1).build();
+        //AWSSecurityTokenServiceClient stsClient = AWSSecurityTokenServiceClient.builder().build();
+        AWSSecurityTokenService  service = AWSSecurityTokenServiceClientBuilder.standard().build();
+        GetSessionTokenResult result = service.getSessionToken();
+        Credentials cred = result.getCredentials();
+        
+        BasicAWSCredentials credentials = new BasicAWSCredentials(cred.getAccessKeyId(), cred.getSecretAccessKey());
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new StaticCredentialsProvider(credentials)).withRegion(Regions.US_EAST_1).build();
         return getFileFromS3(s3Client);
     }
 
