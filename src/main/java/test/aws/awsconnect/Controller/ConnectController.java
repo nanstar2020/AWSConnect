@@ -1,9 +1,8 @@
 package test.aws.awsconnect.Controller;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.auth.BasicSessionCredentials;
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider;
+import com.amazonaws.auth.*;
+import com.amazonaws.auth.profile.internal.securitytoken.RoleInfo;
+import com.amazonaws.auth.profile.internal.securitytoken.STSProfileCredentialsServiceProvider;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.internal.StaticCredentialsProvider;
 import com.amazonaws.regions.Regions;
@@ -37,15 +36,15 @@ public class ConnectController {
 
     @GetMapping(value="/sts")
     public String connectBySTS() {
-        AWSSecurityTokenService sts_client = AWSSecurityTokenServiceClientBuilder.standard()
-                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("sts.amazonaws.com", "us-east-1")).build();
-        GetSessionTokenRequest session_token_request = new GetSessionTokenRequest();
-        GetSessionTokenResult session_token_result =
-                sts_client.getSessionToken(session_token_request);
-        Credentials session_creds = session_token_result.getCredentials();
-        BasicSessionCredentials credentials = new BasicSessionCredentials(
-                session_creds.getAccessKeyId(), session_creds.getSecretAccessKey(), session_creds.getSessionToken());
-        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(credentials)).withRegion(Regions.US_EAST_1).build();
+//        AWSSecurityTokenService sts_client = AWSSecurityTokenServiceClientBuilder.standard()
+//                .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration("sts.amazonaws.com", "us-east-1")).build();
+//        GetSessionTokenRequest session_token_request = new GetSessionTokenRequest();
+//        GetSessionTokenResult session_token_result =
+//                sts_client.getSessionToken(session_token_request);
+//        Credentials session_creds = session_token_result.getCredentials();
+//        BasicSessionCredentials credentials = new BasicSessionCredentials(
+//                session_creds.getAccessKeyId(), session_creds.getSecretAccessKey(), session_creds.getSessionToken());
+        AmazonS3 s3Client = AmazonS3ClientBuilder.standard().withCredentials(new STSProfileCredentialsServiceProvider(new RoleInfo())).withRegion(Regions.US_EAST_1).build();
         return getFileFromS3(s3Client);
     }
 
